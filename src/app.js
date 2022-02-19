@@ -97,8 +97,22 @@ class Human extends Creature {
   ) {
     super(species, weight, height, diet, location, era, fact);
     this.name = name;
+    this.dinoTaller = function (dino) {
+      if (dino.height > this.height) {
+        return true;
+      }
+    };
+    this.dinoHeavier = function (dino) {
+      if (dino.weight > this.weight) {
+        return true;
+      }
+    };
+    this.sameDiet = function (dino) {
+      if (dino.diet === this.diet) {
+        return true;
+      }
+    };
   }
-  // get: calculateHeight from feet and inches
 }
 
 class CreatureDataHandling {
@@ -128,17 +142,17 @@ class CreatureDataHandling {
     e.preventDefault();
     const nameInput = document.getElementById("name").value;
     const species = "homo sapiens";
-    const weightInput = document.getElementById("weight").value;
-    const feetInput = document.getElementById("feet").value;
-    //const inchesInput = document.getElementById("inches").value;
-    const dietInput = document.getElementById("diet").value;
+    const weightInput = Number(document.getElementById("weight").value);
+    const feetInput = Number(document.getElementById("feet").value);
+    const inchesInput = Number(document.getElementById("inches").value);
+    const totalHeightInFeet = feetInput + 0.083 * inchesInput;
+    const dietInput = document.getElementById("diet").value.toLowerCase();
 
     this.human = new Human(
       nameInput,
       species,
       weightInput,
-      feetInput,
-      //inchesInput, // getter
+      totalHeightInFeet,
       dietInput
     );
 
@@ -153,8 +167,68 @@ const inputForm = document.getElementById("dino-compare");
 inputForm.addEventListener("submit", dataHandling.loadExternalData);
 
 function renderGrid(human) {
+  inputForm.innerHTML = " ";
   const grid = document.getElementById("grid");
   const dinos = dataHandling.sendDinos();
+
+  for (const dino of dinos) {
+    switch (dino.species) {
+      case "Pigeon":
+        break;
+      case "Triceratops":
+        if (human.dinoTaller(dino)) {
+          dino.fact = `You are smaller than ${dino.species}`;
+        } else {
+          dino.fact = `You are taller than ${dino.species}`;
+        }
+        break;
+      case "Tyrannosaurus Rex":
+        if (human.sameDiet(dino)) {
+          dino.fact = `You have the same diet as ${dino.species}`;
+        } else {
+          dino.fact = `You have a different diet than ${dino.species}`;
+        }
+        break;
+      case "Anklyosaurus":
+        if (human.dinoHeavier(dino)) {
+          dino.fact = `You are lighter than ${dino.species}`;
+        } else {
+          dino.fact = `You are heavier than ${dino.species}`;
+        }
+        break;
+      case "Brachiosaurus":
+        if (human.sameDiet(dino)) {
+          dino.fact = `You have the same diet as ${dino.species}`;
+        } else {
+          dino.fact = `You have a different diet than ${dino.species}`;
+        }
+        break;
+      case "Stegosaurus":
+        if (human.dinoTaller(dino)) {
+          dino.fact = `You are smaller than ${dino.species}`;
+        } else {
+          dino.fact = `You are taller than ${dino.species}`;
+        }
+        break;
+      case "Elasmosaurus":
+        if (human.dinoHeavier(dino)) {
+          dino.fact = `You are lighter than ${dino.species}`;
+        } else {
+          dino.fact = `You are heavier than ${dino.species}`;
+        }
+        break;
+      case "Pteranodon":
+        if (human.sameDiet(dino)) {
+          dino.fact = `You have the same diet as ${dino.species}`;
+        } else {
+          dino.fact = `You have a different diet than ${dino.species}`;
+        }
+        break;
+      default:
+        break;
+    }
+  }
+
   dinos.splice(4, 0, human);
 
   for (const dino of dinos) {
