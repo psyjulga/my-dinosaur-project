@@ -88,21 +88,21 @@ function renderGrid(human) {
 
       // three facts derive from the comparison methods
       if (human.dinoTaller(dino)) {
-        factsArr.push(`You are smaller than ${dino.species}`);
+        factsArr.push(`You are smaller than ${dino.species}.`);
       } else {
-        factsArr.push(`You are taller than ${dino.species}`);
+        factsArr.push(`You are taller than ${dino.species}.`);
       }
 
       if (human.dinoHeavier(dino)) {
-        factsArr.push(`You are lighter than ${dino.species}`);
+        factsArr.push(`You are lighter than ${dino.species}.`);
       } else {
-        factsArr.push(`You are heavier than ${dino.species}`);
+        factsArr.push(`You are heavier than ${dino.species}.`);
       }
 
       if (human.sameDiet(dino)) {
-        factsArr.push(`You have the same diet as ${dino.species}`);
+        factsArr.push(`You have the same diet as ${dino.species}.`);
       } else {
-        factsArr.push(`You have a different diet than ${dino.species}`);
+        factsArr.push(`You have a different diet than ${dino.species}.`);
       }
       // select one of those facts randomly to show in the graphic
       dino.fact = factsArr[Math.floor(Math.random() * factsArr.length)];
