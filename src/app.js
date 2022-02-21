@@ -1,153 +1,49 @@
-const creatures = [
-  {
-    species: "Triceratops",
-    weight: 13000,
-    height: 114,
-    diet: "herbavor",
-    where: "North America",
-    when: "Late Cretaceous",
-    fact: "First discovered in 1889 by Othniel Charles Marsh",
-  },
-  {
-    species: "Tyrannosaurus Rex",
-    weight: 11905,
-    height: 144,
-    diet: "carnivor",
-    where: "North America",
-    when: "Late Cretaceous",
-    fact: "The largest known skull measures in at 5 feet long.",
-  },
-  {
-    species: "Anklyosaurus",
-    weight: 10500,
-    height: 55,
-    diet: "herbavor",
-    where: "North America",
-    when: "Late Cretaceous",
-    fact: "Anklyosaurus survived for approximately 135 million years.",
-  },
-  {
-    species: "Brachiosaurus",
-    weight: 70000,
-    height: "372",
-    diet: "herbavor",
-    where: "North America",
-    when: "Late Jurasic",
-    fact: "An asteroid was named 9954 Brachiosaurus in 1991.",
-  },
-  {
-    species: "Stegosaurus",
-    weight: 11600,
-    height: 79,
-    diet: "herbavor",
-    where: "North America, Europe, Asia",
-    when: "Late Jurasic to Early Cretaceous",
-    fact: "The Stegosaurus had between 17 and 22 seperate places and flat spines.",
-  },
-  {
-    species: "Elasmosaurus",
-    weight: 16000,
-    height: 59,
-    diet: "carnivor",
-    where: "North America",
-    when: "Late Cretaceous",
-    fact: "Elasmosaurus was a marine reptile first discovered in Kansas.",
-  },
-  {
-    species: "Pteranodon",
-    weight: 44,
-    height: 20,
-    diet: "carnivor",
-    where: "North America",
-    when: "Late Cretaceous",
-    fact: "Actually a flying reptile, the Pteranodon is not a dinosaur.",
-  },
-  {
-    species: "Pigeon",
-    weight: 0.5,
-    height: 9,
-    diet: "herbavor",
-    where: "World Wide",
-    when: "Holocene",
-    fact: "All birds are living dinosaurs.",
-  },
-];
-class Creature {
-  constructor(species, weight, height, diet, where, when, fact) {
-    this.species = species;
-    this.weight = weight;
-    this.height = height;
-    this.diet = diet;
-    this.location = where;
-    this.era = when;
-    this.fact = fact;
-  }
-}
+import { Creature } from "./creature.js";
+import { Human } from "./human.js";
 
-class Human extends Creature {
-  constructor(
-    name,
-    species,
-    weight,
-    height,
-    diet,
-    location = "World Wide",
-    era = "Holocene",
-    fact = "All humans are animals."
-  ) {
-    super(species, weight, height, diet, location, era, fact);
-    this.name = name;
-    this.dinoTaller = function (dino) {
-      if (dino.height > this.height) {
-        return true;
-      }
-    };
-    this.dinoHeavier = function (dino) {
-      if (dino.weight > this.weight) {
-        return true;
-      }
-    };
-    this.sameDiet = function (dino) {
-      if (dino.diet === this.diet) {
-        return true;
-      }
-    };
-  }
-}
-
+// Data Handling Class
 class CreatureDataHandling {
   constructor() {
-    this.dinos = [];
-    this.human = {};
+    this.dinos = []; // dino instances to be stored in
+    this.human = {}; // human instance to be stored in
   }
   sendDinos() {
-    return this.dinos;
+    return this.dinos; // to access data from the outside
   }
-  loadInternalData(creatures) {
-    for (let creature of creatures) {
-      const dino = new Creature(
-        creature.species,
-        creature.weight,
-        creature.height,
-        creature.diet,
-        creature.where,
-        creature.when,
-        creature.fact
+  // get the data from the json file
+  loadInternalData() {
+    fetch("dino.json")
+      .then((response) => response.json())
+      .then((myData) =>
+        // loop through json data
+        // instantiate dino objects
+        // and push them into the dinos array
+        myData.Dinos.forEach((dino) => {
+          const dinoInstance = new Creature(
+            dino.species,
+            dino.weight,
+            dino.height,
+            dino.diet,
+            dino.fact,
+            dino.where,
+            dino.when
+          );
+          this.dinos.push(dinoInstance);
+        })
       );
-      this.dinos.push(dino);
-    }
   }
-
+  // get the data from the user form input
   loadExternalData(e) {
     e.preventDefault();
     const nameInput = document.getElementById("name").value;
-    const species = "homo sapiens";
+    const species = "Homo Sapiens";
     const weightInput = Number(document.getElementById("weight").value);
     const feetInput = Number(document.getElementById("feet").value);
     const inchesInput = Number(document.getElementById("inches").value);
     const totalHeightInFeet = feetInput + 0.083 * inchesInput;
     const dietInput = document.getElementById("diet").value.toLowerCase();
-
+    // instantiate human object
+    // and assign it to the human object
     this.human = new Human(
       nameInput,
       species,
@@ -155,83 +51,73 @@ class CreatureDataHandling {
       totalHeightInFeet,
       dietInput
     );
-
+    // trigger the render function
+    // which will show the dinographic
     renderGrid(this.human);
   }
 }
 
+// instantiate the Data Handling Class
+// to invoke its methods
 const dataHandling = new CreatureDataHandling();
-dataHandling.loadInternalData(creatures);
+// internal data loads onload
+dataHandling.loadInternalData();
 
+// select the form and add a submit event listener
+// on submit the external data will be loaded
 const inputForm = document.getElementById("dino-compare");
 inputForm.addEventListener("submit", dataHandling.loadExternalData);
 
+// which will thenn trigger the rendering function
 function renderGrid(human) {
+  // on submit the form disappears
   inputForm.innerHTML = " ";
+  // select the grid to append children
   const grid = document.getElementById("grid");
+  // get the dinos array (human object received as argument)
   const dinos = dataHandling.sendDinos();
 
+  // loop through dinos array
+  // create an array of six facts for every dino
   for (const dino of dinos) {
-    switch (dino.species) {
-      case "Pigeon":
-        break;
-      case "Triceratops":
-        if (human.dinoTaller(dino)) {
-          dino.fact = `You are smaller than ${dino.species}`;
-        } else {
-          dino.fact = `You are taller than ${dino.species}`;
-        }
-        break;
-      case "Tyrannosaurus Rex":
-        if (human.sameDiet(dino)) {
-          dino.fact = `You have the same diet as ${dino.species}`;
-        } else {
-          dino.fact = `You have a different diet than ${dino.species}`;
-        }
-        break;
-      case "Anklyosaurus":
-        if (human.dinoHeavier(dino)) {
-          dino.fact = `You are lighter than ${dino.species}`;
-        } else {
-          dino.fact = `You are heavier than ${dino.species}`;
-        }
-        break;
-      case "Brachiosaurus":
-        if (human.sameDiet(dino)) {
-          dino.fact = `You have the same diet as ${dino.species}`;
-        } else {
-          dino.fact = `You have a different diet than ${dino.species}`;
-        }
-        break;
-      case "Stegosaurus":
-        if (human.dinoTaller(dino)) {
-          dino.fact = `You are smaller than ${dino.species}`;
-        } else {
-          dino.fact = `You are taller than ${dino.species}`;
-        }
-        break;
-      case "Elasmosaurus":
-        if (human.dinoHeavier(dino)) {
-          dino.fact = `You are lighter than ${dino.species}`;
-        } else {
-          dino.fact = `You are heavier than ${dino.species}`;
-        }
-        break;
-      case "Pteranodon":
-        if (human.sameDiet(dino)) {
-          dino.fact = `You have the same diet as ${dino.species}`;
-        } else {
-          dino.fact = `You have a different diet than ${dino.species}`;
-        }
-        break;
-      default:
-        break;
+    const factsArr = [];
+    if (dino.species !== "Homo Sapiens" && dino.species !== "Pigeon") {
+      factsArr.push(dino.fact); // fact from json
+      factsArr.push(`${dino.species} weighs ${dino.weight} lbs.`);
+      factsArr.push(`${dino.species} lived in ${dino.era}.`);
+
+      // three facts derive from the comparison methods
+      if (human.dinoTaller(dino)) {
+        factsArr.push(`You are smaller than ${dino.species}`);
+      } else {
+        factsArr.push(`You are taller than ${dino.species}`);
+      }
+
+      if (human.dinoHeavier(dino)) {
+        factsArr.push(`You are lighter than ${dino.species}`);
+      } else {
+        factsArr.push(`You are heavier than ${dino.species}`);
+      }
+
+      if (human.sameDiet(dino)) {
+        factsArr.push(`You have the same diet as ${dino.species}`);
+      } else {
+        factsArr.push(`You have a different diet than ${dino.species}`);
+      }
+      // select one of those facts randomly to show in the graphic
+      dino.fact = factsArr[Math.floor(Math.random() * factsArr.length)];
     }
   }
 
+  // put the human object at index 4 of the dinos array
+  // so the human will be displayed in the center
   dinos.splice(4, 0, human);
 
+  // loop throug the dinos array again
+  // (which now contains the human object too)
   for (const dino of dinos) {
+    // creating all html elements we need
+    // append them as needed
     const gridItem = document.createElement("div");
     const headline = document.createElement("h3");
     const image = document.createElement("img");
@@ -242,7 +128,9 @@ function renderGrid(human) {
     gridItem.appendChild(image);
     gridItem.appendChild(paragraph);
 
-    if (dino.species !== "homo sapiens") {
+    // define the elements' contents
+    // depending on the species
+    if (dino.species !== "Homo Sapiens") {
       const headlineContent = dino.species;
       headline.innerHTML = headlineContent;
 
@@ -259,4 +147,5 @@ function renderGrid(human) {
       image.setAttribute("src", humanUrl);
     }
   }
+  return;
 }
